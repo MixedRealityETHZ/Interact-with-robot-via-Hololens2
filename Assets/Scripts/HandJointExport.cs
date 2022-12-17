@@ -52,6 +52,7 @@ public class HandJointExport : MonoBehaviour
     private Vector3 RelativePosition;
     private Vector3 RelativeEulerAngles;
     private Quaternion RelativeRotation;
+    private float countdown = -10000;
 
     private Model runtimeModel;
 
@@ -146,6 +147,7 @@ public class HandJointExport : MonoBehaviour
         StartCoroutine(coroutine);
         hand_status = HandGesture.Nothing;
         timer = 0;
+        countdown = 0;
     }
 
     public float Sigmoid(float value) {
@@ -178,15 +180,23 @@ public class HandJointExport : MonoBehaviour
         RelativePosition = cameraRealtimePosition - cameraPosition;
         RelativeRotation = new Quaternion( cameraRealtimeRotation.x-cameraRotation.x, cameraRealtimeRotation.y - cameraRotation.y, cameraRealtimeRotation.z - cameraRotation.z, cameraRealtimeRotation.w - cameraRotation.w);
 
-        if (IsInvalidTracking())
+        if(countdown < 5)
         {
-            WarningPanel.text = "hand found";
-            RefreshTrackedObject();
+            countdown += Time.deltaTime;
+            WarningPanel.text = "Hand Gesture Recognization will start in " + Math.Ceiling(5 - countdown).ToString() + " seconds";
         }
         else
         {
-            tensoridx = 0;
-            WarningPanel.text = "hand not found";
+            if (IsInvalidTracking())
+            {
+                WarningPanel.text = "hand found";
+                RefreshTrackedObject();
+            }
+            else
+            {
+                tensoridx = 0;
+                WarningPanel.text = "hand not found";
+            }
         }
     }
 
@@ -325,8 +335,18 @@ public class HandJointExport : MonoBehaviour
                 }
             }
             string log = "";
+            int joint_idx = 0;
+            // TODO: !!!! add bounding value
+            float xmin = -0.4f;
+            float xmax = 0.4f;
+            float ymin = -0.40f;
+            float ymax = 0.15f;
+            float zmin = -0.0f;
+            float zmax = 0.7f;
+            bool out_of_box = false;
             foreach (TrackedHandJoint trackedHandJoint in Enum.GetValues(typeof(TrackedHandJoint)))
             {
+                joint_idx += 1;
                 if (trackedHandJoint != 0)
                 {
                     target = HandJointService.RequestJointTransform(trackedHandJoint, currentTrackedHandedness);
@@ -346,11 +366,18 @@ public class HandJointExport : MonoBehaviour
                         try
                         {
                             inputTensor[tensoridx] = position[0];
-                            tensoridx+=1;
-                            inputTensor[tensoridx]= position[1];
-                            tensoridx+=1;
-                            inputTensor[tensoridx]= position[2];
-                            tensoridx+=1;
+                            tensoridx += 1;
+                            inputTensor[tensoridx] = position[1];
+                            tensoridx += 1;
+                            inputTensor[tensoridx] = position[2];
+                            tensoridx += 1;
+                            if (joint_idx == 10){
+                                if (!( (xmin < position[0]) && (position[0]<xmax) && (ymin < position[1]) && (position[1] < ymax) && (zmin < position[2]) && (position[2] < zmax)   )) {
+                                    hand_status = HandGesture.Nothing;
+                                    tensoridx = 0;
+                                    out_of_box = true;
+                                }
+                            }
                         }
                         catch (Exception e){
                             //pass
@@ -390,17 +417,26 @@ public class HandJointExport : MonoBehaviour
 
                 tensoridx = 0;
                 //Debug.Log(log);
-                LoggingPanel.text = "\r\n" + "\r\n" + "Logging Data:" + action_text + " " + string.Join(",", outputlist);
+                LoggingPanel.text = "Prediction:" + action_text + " " + string.Join(",", outputlist) + "\r\n" + log;
                 OverallLogging += log;
                 OverallLogging += "\r\n";
             }
-            if(log.Length >0){
-                WarningPanel.text = tensoridx + "";
+            if (log.Length > 0 && out_of_box == false)
+            {
+                WarningPanel.text = "Collecting data: " + tensoridx + "/390";
             } else
             {
+                if (out_of_box)
+                {
+                    WarningPanel.text = "Hand out of bound!";
+                }
+                else {
+                    WarningPanel.text = "Hand not found!";
+                }
+                LoggingPanel.text = "Prediction: None";
                 tensoridx = 0;
                 hand_status = HandGesture.Nothing;
-                WarningPanel.text = "hand not found:log is zero";
+                
             }
             // if (log.Length > 0)
             // {

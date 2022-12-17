@@ -24,7 +24,6 @@ public class ImageMsgSubscriber : MonoBehaviour
     void Start()
     {
         // Get ROS connection static instance
-        CoreServices.SpatialAwarenessSystem.Disable();
         m_Ros = ROSConnection.GetOrCreateInstance();
         m_Ros.Subscribe<CompressedImageMsg>(m_TopicName, ImageMsgArrive);
         m_image = m_screen.GetComponent<RawImage>();

@@ -16,10 +16,12 @@ public class AnchorManipulator : MonoBehaviour
 {
     public bool is_on_manipulation = false;
     public GameObject ASAController = null;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameObject.transform.position = Camera.main.transform.position;
+        gameObject.transform.rotation = Camera.main.transform.rotation;
     }
 
     // Update is called once per frame

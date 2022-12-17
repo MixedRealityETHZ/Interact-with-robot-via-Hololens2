@@ -39,10 +39,7 @@ public class CubeManipulator : MonoBehaviour
         m_Ros.RegisterPublisher<TwistMsg>(m_TopicName);
         coroutine = Publisher();
         StartCoroutine(coroutine);
-    }
-    public void FixCube()
-    {
-        is_fixed_cube2world = !is_fixed_cube2world;
+        is_fixed_cube2world = true;
     }
 
     private void OnDestroy()

@@ -15,7 +15,6 @@ using RosMessageTypes.Geometry;
 using System.Linq;
 using Microsoft.MixedReality.Toolkit;
 using UnityEngine.SceneManagement;
-using static UnityEditor.PlayerSettings;
 
 [RequireComponent(typeof(SpatialAnchorManager))]
 public class ASAScript : MonoBehaviour
@@ -25,7 +24,6 @@ public class ASAScript : MonoBehaviour
     /// </summary>
     private float[] _tappingTimer = { 0, 0 };
     public GameObject attched_gameobject = null;
-
     public GameObject Arrow = null;
 
     /// <summary>
@@ -52,12 +50,10 @@ public class ASAScript : MonoBehaviour
 
     public float _timer = -1f;
     private Vector3 target_pos;
-
     // <Start>
     // Start is called before the first frame update
     void Start()
     {
-        CoreServices.SpatialAwarenessSystem.Disable();
         textBox = debugBox.GetComponent<TextMesh>();
         textBox.text = "Move the sphere to \nand the robot will \ngo there";
         _spatialAnchorManager = GetComponent<SpatialAnchorManager>();
@@ -70,6 +66,11 @@ public class ASAScript : MonoBehaviour
     private void OnDestroy()
     {
         anchor_publisher.m_Ros.Disconnect();
+        if (_spatialAnchorManager.IsSessionStarted)
+        {
+            // Stop Session and remove all GameObjects. This does not delete the Anchors in the cloud
+            _spatialAnchorManager.DestroySession();
+        }
     }
 
     public void ChangeScene(int i)
@@ -77,27 +78,28 @@ public class ASAScript : MonoBehaviour
         if (i == 0)
         {
         }
-        else if(i == 1)
+        else
         {
-            SceneManager.LoadScene(sceneName: "HandGestureSpot");
+            attched_gameobject.SetActive(false);
+            Arrow.SetActive(false);
+            textBox.GetComponent<MeshRenderer>().enabled = false;
+            _timer = -1f;
+            if (i == 1)
+            {
+                SceneManager.LoadScene(sceneName: "HandGestureSpot");
+            }
+            else if (i == 2)
+            {
+                SceneManager.LoadScene(sceneName: "RotationCube");
+            }
         }
-        else if(i == 2)
-        {
-            SceneManager.LoadScene(sceneName: "RotationCube");
-        }
-    }
-
-
-    private void OnDestroy()
-    {
-/*        DeleteAnchor(_createdAnchorIDs);*/
     }
 
     // <Update>
     // Update is called once per frame
     void Update()
     {
-        //Check for any air taps from either hand
+     /*   //Check for any air taps from either hand
         for (int i = 0; i < 2; i++)
         {
             InputDevice device = InputDevices.GetDeviceAtXRNode((i == 0) ? XRNode.RightHand : XRNode.LeftHand);
@@ -127,11 +129,14 @@ public class ASAScript : MonoBehaviour
                     }
                 }
             }
-        }
+        }*/
         if (_timer > wating_sec)
         {
             _timer = -1f;
-            NewAnchorPos(attched_gameobject.transform.position);
+            if (attched_gameobject)
+            {
+                NewAnchorPos(attched_gameobject.transform.position);
+            }
         }
         else if(_timer < 0f) { }
         else
