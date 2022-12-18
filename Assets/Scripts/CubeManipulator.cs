@@ -17,7 +17,7 @@ public class CubeManipulator : MonoBehaviour
     private Quaternion m_cube_init_rotate = new Quaternion(0, 0, 0, 1.0F);
     public float m_recover_rate = 1.0F;
     public bool is_fixed_cube2world = true;
-    public float volocity = 0.2f;
+    public float volocity = 0.8f;
 
     // Variables required for ROS communication
     [SerializeField]
@@ -64,7 +64,7 @@ public class CubeManipulator : MonoBehaviour
 
     public void SetRate(SliderEventData eventData)
     {
-        volocity = eventData.NewValue;
+        volocity = eventData.NewValue * 1.2f;
     }
     public void Publish(TwistMsg twist)
     {

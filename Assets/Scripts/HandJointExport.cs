@@ -104,19 +104,19 @@ public class HandJointExport : MonoBehaviour
             switch (hand_status)
             {
                 case HandGesture.TurnLeft:
-                    twist.linear = new Vector3Msg(0, -0.4, 0);
-                    Publish(twist);
-                    break;
-                case HandGesture.TurnRight:
                     twist.linear = new Vector3Msg(0, 0.4, 0);
                     Publish(twist);
                     break;
+                case HandGesture.TurnRight:
+                    twist.linear = new Vector3Msg(0, -0.4, 0);
+                    Publish(twist);
+                    break;
                 case HandGesture.Forward:
-                    twist.linear = new Vector3Msg(0.4, 0, 0);
+                    twist.linear = new Vector3Msg(0.6, 0, 0);
                     Publish(twist);
                     break;
                 case HandGesture.Stop:
-                    twist.linear = new Vector3Msg(-0.4, 0, 0);
+                    twist.linear = new Vector3Msg(-0.6, 0, 0);
                     Publish(twist);
                     break;
                 default:
@@ -339,7 +339,7 @@ public class HandJointExport : MonoBehaviour
             // TODO: !!!! add bounding value
             float xmin = -0.4f;
             float xmax = 0.4f;
-            float ymin = -0.40f;
+            float ymin = -0.25f;
             float ymax = 0.15f;
             float zmin = -0.0f;
             float zmax = 0.7f;
@@ -412,12 +412,12 @@ public class HandJointExport : MonoBehaviour
                 else if (argmax == 3)
                 {
                     hand_status = HandGesture.Stop;
-                    action_text = "Stop";
+                    action_text = "WalkBack";
                 }
 
                 tensoridx = 0;
                 //Debug.Log(log);
-                LoggingPanel.text = "Prediction:" + action_text + " " + string.Join(",", outputlist) + "\r\n" + log;
+                LoggingPanel.text = "Prediction:" + action_text; //+ " " + string.Join(",", outputlist) + "\r\n" + log;
                 OverallLogging += log;
                 OverallLogging += "\r\n";
             }
