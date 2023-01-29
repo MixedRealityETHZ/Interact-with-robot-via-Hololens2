@@ -45,9 +45,13 @@ Capture from HoloLens Portal video for higher quality
 
 
 Run Spot driver: ```roslaunch spot_driver driver.launch```
+
 Run TCP Endpoint: ```roslaunch ros_tcp_endpoint endpoint.launch```
+
 Run ASA: ```roslaunch asa_ros asa_ros.launch```
+
 Run go2anchor.py: ```python3 src/go2anchor/go2anchor.py```
+
 
 Create a dummy anchor in spot: rosservice call /asa_ros/create_anchor '{anchor_in_target_frame: {header: {frame_id: odom}}}’
 
