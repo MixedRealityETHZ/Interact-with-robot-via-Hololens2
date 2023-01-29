@@ -27,6 +27,7 @@ The joystick is a cube and the Spot robot moves by interacting with it. For exam
 ### Hand-gestures
 This is a system for detecting and recognizing hand gestures to control a Spot robot. We use the MRTK (Mixed Reality Toolkit) to detect hands and obtain hand joint data, which we then pass to a hand gesture recognition model. We convert the model output into velocity commands, which we send to the Spot computer.
 [Watch the video](https://drive.google.com/file/d/19ZoH12Rgbq7-o9xvbA3--_vqvGkIGc7G/view?usp=sharing)
+
 Hand gesture recognition training code and `README` are in the `MR_model_training` folder.
 
 ### Azure Spatial Anchors
