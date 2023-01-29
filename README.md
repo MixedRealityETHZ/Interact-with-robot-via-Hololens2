@@ -33,3 +33,24 @@ Hand gesture recognition training code and `README` are in the `MR_model_trainin
 ### Azure Spatial Anchors
 Azure Spatial Anchor is an online service to map 3D spaces, we can use it to colocalize Spot with Hololens and know their relative position with each other. When a user places a spatial anchor (represented by a sphere) anywhere in the room, the robots moves to that location. The orientation of the Spot robot is such that it always faces the user.
 [Watch the video](https://drive.google.com/file/d/1tp7by5bSnSeOmuDXBCE8HjAfZAqygAAl/view?usp=sharing)
+
+### Using spot
+
+```rosrun image_transport republish raw in:=/spot/camera/hand_color/image compressed out:=/spot/camera/hand_color```
+
+Capture from HoloLens Portal video for higher quality
+
+```rosservice call /asa_ros/create_anchor '{anchor_in_target_frame: {header: {frame_id: odom}}}'```
+
+
+
+Run Spot driver: ```roslaunch spot_driver driver.launch```
+Run TCP Endpoint: ```roslaunch ros_tcp_endpoint endpoint.launch```
+Run ASA: ```roslaunch asa_ros asa_ros.launch```
+Run go2anchor.py: ```python3 src/go2anchor/go2anchor.py```
+
+Create a dummy anchor in spot: rosservice call /asa_ros/create_anchor '{anchor_in_target_frame: {header: {frame_id: odom}}}’
+
+Run image to joystick scene: ```rosrun image_transport republish raw in:=/spot/camera/hand_color/image compressed out:=/spot/camera/hand_color```
+
+
